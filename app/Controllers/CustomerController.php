@@ -150,13 +150,12 @@ class CustomerController extends Controller
 							unset($data['first_password']);
 							$password = $data['password'];
 												
-							if (ctype_alnum($password) && strlen($password) >= 8 ) {
-								
+							if (ctype_alnum($password) && strlen($password) >= 8 ) {	
 								$data['admin_role'] = 0; 
 								$data['password'] = md5($password);
 								$this->getModel('customer')->addUser($data);
 								$this->set('message', 'Вас зареєстровано');
-								Core\Helper::redirect('/index/index');
+								Core\Helper::redirect('/customer/login');
 							}else{
 								$this->set('message', 'Пароль вказано не вірно');
 							}
@@ -175,6 +174,135 @@ class CustomerController extends Controller
 			}  
         }     
         $this->renderLayout();
+	}
+	
+	public function editAction()
+	{
+		$this->set('title', "Редагування профілю");
+		$this->set('message', '');
+		$user = Core\Helper::getCustomer();
+		$this->set('user', $user);
+		
+		if (isset($_POST['action'])) {
+			
+			switch ($_POST['action']){
+				
+				case 'edit':
+				$this->editUser($user);
+				break;
+				
+				case 'delete':
+				$this->deleteUser($user);
+				break;
+			}
+		}
+		
+		$this->renderLayout();		
+		
+	}
+	
+	public function editUser($user)
+	{
+		$errors = [];
+		
+		$id = $_SESSION['id'];
+		
+		if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
+			
+			if(empty($_POST['new_password'])){
+				unset($_POST['new_password']);
+			}
+			
+			$data = [];
+			$rate = 0;
+			
+			foreach($_POST as $key => $val){
+				if(!empty(trim($val))){
+					$data[$key] = strip_tags($val);
+				}else{
+					$rate++;
+				}
+			}
+			
+			if (!empty($data) && $rate < 1) {
+			
+				if ($data['email'] == $user['email']) {
+								
+				}else{
+					
+					if (filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+					
+						$customer = $this->getModel('customer')->getUser($data['email']);
+										
+						if (!empty($customer)) {
+							
+							$errors[] = 'Користувач з таким email вже є';
+							$this->set('message', 'Користувач з таким email вже є');
+							
+						}
+					}else{
+						$errors[] = 'Email не вірний';
+						$this->set('message', 'Email не вірний');
+					}
+				}
+				
+				if (count($errors) == 0) {
+					
+					unset($data['action']);
+					$password = md5($data['password']);
+					
+					if($user['password'] == $password){
+						
+						if (isset($data['new_password'])) {
+						
+							$new_password = $data['new_password'];
+							if (ctype_alnum($new_password) && strlen($new_password) >= 8 ) {
+								unset($data['new_password']);
+								$data['password'] = md5($new_password);										
+								$this->getModel('Customer')->updateCustomerInfo($data, $id);
+								$this->set('message', 'Профіль відредаговано');
+								
+							}else{
+								$this->set('message', 'Пароль вказано не вірно');
+							}
+						}else{
+							$data['password'] = $password;
+							$this->getModel('Customer')->updateCustomerInfo($data, $id);
+							
+							$this->set('message', 'Профіль відредаговано');
+							
+						}
+					}else{
+						$this->set('message', 'Пароль від профілю не вірний');
+					}
+							
+				}else{
+					$this->set('message', 'Цей Email введено не вірно або він вже використовується іншим користувачем');
+				}
+				
+				
+			}else{
+				$this->set('message', 'Заповніть всі поля');
+			}
+			
+		}
+			
+	}
+	
+	public function deleteUser($user)
+	{
+		$id = $_SESSION['id'];
+		$password = md5($_POST['password']);
+		if($password == $user['password']){
+			$this->getModel('Customer')->deleteCustomer($id);
+			
+			$this->logoutAction();
+			$this->set('message', 'Профіль видалено');
+		}else{
+			$this->set('message', 'Пароль від профілю не вірний');
+		}
+		
+		
 	}
 
     public function logoutAction()

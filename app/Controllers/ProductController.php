@@ -222,6 +222,7 @@ class ProductController extends Controller
 			
 			default:		
 			$params['price'] = 'ASC';
+			$selected = "price_ASC";
 			$this->set('selected_item', $selected);
 					
 		}

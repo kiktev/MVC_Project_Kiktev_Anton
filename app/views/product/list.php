@@ -15,7 +15,7 @@
 	<button type="submit">Застосувати фільтр</button>
 	<span style="font-size:14pt;"><?php echo $this->get('message_err'); ?></span>
 </form>
-<?php
+<?php	
 		if(isset($_GET['is_delete']) == 1):
 ?>
 <div class="product" style="padding:7px;"><p style="text-align:center; font-size:15pt; margin:0;">

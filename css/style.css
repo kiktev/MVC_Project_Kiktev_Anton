@@ -86,4 +86,36 @@
 	font-size:14pt;
 	margin:1%;
 }
+.edit_customer_section{
+	display:flex;
+	justify-content:center;
+}
+.edit_customer_form{
+	display:flex;
+	flex-direction:column;
+	margin-top:2%;
+	width:60%;
+}
 
+.edit_customer_form button{
+	padding:5px;
+	font-size:14pt;
+	margin:1%;
+	flex-basis:48%;
+}
+
+.edit_customer_form input{
+	padding:5px;
+	font-size:14pt;
+	margin:1%;
+}
+.edit_customer_form span{
+	padding:5px;
+	font-size:16pt;
+	text-align:left;
+}
+.edit_customer_form div{
+	display:flex;
+	justify-content: space-between;
+	
+}

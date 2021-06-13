@@ -27,8 +27,8 @@ class Helper
 		
 		
 		if (Helper::getCustomer() != false) {
-			$customer = Helper::getCustomer();
 			
+			$customer = Helper::getCustomer();	
 			if($customer['admin_role'] == 1) {
 				
 			return true;
